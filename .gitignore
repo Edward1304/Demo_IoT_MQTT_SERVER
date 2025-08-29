@@ -1,0 +1,10 @@
+build/
+.devcontainer/
+.vscode/
+.ci/
+managed_components/
+sdkconfig
+sdkconfig.old
+build/
+CMakeLists.txt.user
+index.html
