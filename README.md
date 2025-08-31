@@ -35,23 +35,56 @@ ESP32-C6 ──(WiFi)──> Internet ──> AWS EC2 Server
    - Ve a [AWS Console](https://aws.amazon.com/console/)
    - Navega a **EC2 > Instances**
 
+  ![AWS EC2 Instance](https://drive.google.com/uc?export=view&id=1fuaXBIEHytHOy2JVB4mLrz9_KXwB-SIB)
+
 2. **Lanzar Nueva Instancia**:
    - Click en **"Launch Instance"**
-   - **Name**: `mqtt-iot-server`
+   
+  ![Lanzar instancia](https://drive.google.com/file/d/1KsmVoDUVva6_cD9U2vwYWw1qdt23LKVk/view?usp=sharing)
+
+
+   - **Name**: `esp-webserver`
+
+   ![Nombre server](https://drive.google.com/file/d/1r6W-NnYiei_XSrN2-oPW5_Kc4phu5rW0/view?usp=sharing)
+
    - **AMI**: Ubuntu Server 22.04 LTS (Free tier eligible)
    - **Instance Type**: t2.micro (Free tier eligible)
 
-3. **Configurar Key Pair**:
-   - Crear nuevo Key Pair o usar existente
-   - Descargar archivo `.pem` para acceso SSH
-
-4. **Configurar Security Groups**:
+3. **Configurar Security Groups**:
    - **SSH (22)**: Tu IP (para acceso remoto)
    - **HTTP (80)**: 0.0.0.0/0 (para la página web)
+
+    ![Grupo de seguridad 1](https://drive.google.com/file/d/1J1x6sIn0GQfFgD3MkQE7eZjF7XVsXBpr/view?usp=sharing)
+
    - **MQTT (1883)**: 0.0.0.0/0 (para el ESP32)
    - **WebSocket (9001)**: 0.0.0.0/0 (para la página web)
 
+   ![Grupo de seguridad 2](https://drive.google.com/file/d/1YQQ4VMH-6w52Fr4fggVbDjCO5tVakzwa/view?usp=sharing)
+
+   ![Grupo de seguridad 3](https://drive.google.com/file/d/1tD4k7NFHZsZwpLkgSl1nUCG2CPb9nd7p/view?usp=sharing)
+
+4. **Configurar Key Pair**:
+
+  ![Key-par 1](https://drive.google.com/file/d/1tD4k7NFHZsZwpLkgSl1nUCG2CPb9nd7p/view?usp=sharing)
+   - Crear nuevo Key Pair o usar existente
+
+
+   ![Key-par 2](https://drive.google.com/file/d/1WInfO19BwOqGEjt24B689RRF2Xo3-r6P/view?usp=sharing)
+
+
+
+   - Descargar archivo `.pem` para acceso SSH
+
+
+   ![Key-par 3](https://drive.google.com/file/d/1s8-bWCufL0JACIJkdMwakB6106TaICSw/view?usp=sharing)
+
+
 5. **Lanzar Instancia** y anotar la **IP pública**
+
+![Launch instance 1](https://drive.google.com/file/d/1QQsbhHSKzdzeS5czW2XZDGCT5SBHPyK3/view?usp=sharing)
+
+![Launch instance 2](https://drive.google.com/file/d/1MOEXaDMneSLZQzOcl8q3mhrGXcwUp3ap/view?usp=sharing)
+
 
 #### 1.2 Conectar al Servidor
 
