@@ -35,7 +35,7 @@ ESP32-C6 ──(WiFi)──> Internet ──> AWS EC2 Server
    - Ve a [AWS Console](https://aws.amazon.com/console/)
    - Navega a **EC2 > Instances**
 
-  ![AWS EC2 Instance](https://drive.google.com/uc?export=view&id=1fuaXBIEHytHOy2JVB4mLrz9_KXwB-SIB)
+  ![AWS EC2 Instance](https://drive.google.com/file/d/155OIdVFIBjbC9M_az7C33ndBVkHtx5FY/view?usp=drive_link)
 
 2. **Lanzar Nueva Instancia**:
    - Click en **"Launch Instance"**
