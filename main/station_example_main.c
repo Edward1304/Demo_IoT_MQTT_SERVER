@@ -92,7 +92,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 static void mqtt_app_start(void) {
     esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtt://54.166.203.245:1883",
+        .broker.address.uri = "mqtt://8.8.8.8:1883",
         .credentials.username = "esp32",
         .credentials.authentication.password = "12345678",
     };
@@ -106,7 +106,7 @@ static void mqtt_app_start(void) {
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "Edward"
+#define EXAMPLE_ESP_WIFI_SSID      "pepito"
 #define EXAMPLE_ESP_WIFI_PASS      "12345678"
 #define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
 

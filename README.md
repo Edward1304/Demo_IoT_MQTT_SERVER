@@ -1,10 +1,19 @@
 # Proyecto IoT: ESP32 LED RGB con MQTT y Servidor Web
+**Autores:**   Edward Fabian Goyeneche Velandia / Juan Sebastian Giraldo Duque  
+
+**Nombre de la Práctica:** Proyecto IoT: ESP32 LED RGB con MQTT y Servidor Web  
+
+**Curso:**  Desarrollo de Sistemas IoT 
+
+**Departamento:**  Departamento de Ingeniería Electrica, Electronica y Computacion  
+
+**Universidad:**  Universida Nacional de Colombia - Sede Manizales 
+
+---
+Esta es la guia para realizar la demo de  un sistema Iot basico donde un ESP32-C6 controla un LED RGB (LED interno) que cambia de colores cada 3 segundos, envía la información por MQTT a un servidor en AWS EC2, y una página web muestra los cambios de color en tiempo real.
 
 
-Esta es la guia para realizar la demo de  un sistema Iot basico donde un ESP32-C6 controla un LED RGB que cambia de colores cada 3 segundos, envía la información por MQTT a un servidor en AWS EC2, y una página web muestra los cambios de color en tiempo real.
-
-
-## 📋 Componentes del Sistema
+##  Componentes de la Demo
 
 - **ESP32-C6-DevKitC-1 v1.2** con LED RGB WS2812 integrado
 - **Servidor AWS EC2** con Ubuntu
@@ -12,7 +21,7 @@ Esta es la guia para realizar la demo de  un sistema Iot basico donde un ESP32-C
 - **Servidor Web Apache** 
 - **Página Web** con visualización en tiempo real
 
-## 🏗️ Arquitectura del Sistema
+##  Arquitectura de la Demo
 
 ```
 ESP32-C6 ──(WiFi)──> Internet ──> AWS EC2 Server
@@ -25,170 +34,276 @@ ESP32-C6 ──(WiFi)──> Internet ──> AWS EC2 Server
 
 ---
 
-## 🚀 Guía de Instalación Paso a Paso
+#  Guía  Paso a Paso
 
-### Parte 1: Configuración del Servidor AWS EC2
+## Parte 1: Configuración del Servidor AWS EC2
 
-#### 1.1 Crear Instancia EC2
+### 1. Crear Instancia EC2
 
-1. **Acceder a AWS Console**:
+#### 1.1 **Acceder a AWS Console**:
    - Ve a [AWS Console](https://aws.amazon.com/console/)
    - Navega a **EC2 > Instances**
 
-  ![AWS EC2 Instance](https://drive.google.com/file/d/155OIdVFIBjbC9M_az7C33ndBVkHtx5FY/view?usp=drive_link)
+  ![AWS EC2 Instance](./img/1.png)
 
-2. **Lanzar Nueva Instancia**:
+#### 1.2 **Lanzar Nueva Instancia**:
    - Click en **"Launch Instance"**
    
-  ![Lanzar instancia](https://drive.google.com/file/d/1KsmVoDUVva6_cD9U2vwYWw1qdt23LKVk/view?usp=sharing)
+  ![Lanzar instancia](./img/2.png)
+
 
 
    - **Name**: `esp-webserver`
 
-   ![Nombre server](https://drive.google.com/file/d/1r6W-NnYiei_XSrN2-oPW5_Kc4phu5rW0/view?usp=sharing)
+   ![Nombre server](./img/3.png)
 
    - **AMI**: Ubuntu Server 22.04 LTS (Free tier eligible)
    - **Instance Type**: t2.micro (Free tier eligible)
 
-3. **Configurar Security Groups**:
+#### 1.3 **Configurar Security Groups**:
    - **SSH (22)**: Tu IP (para acceso remoto)
    - **HTTP (80)**: 0.0.0.0/0 (para la página web)
 
-    ![Grupo de seguridad 1](https://drive.google.com/file/d/1J1x6sIn0GQfFgD3MkQE7eZjF7XVsXBpr/view?usp=sharing)
+  ![Grupo de seguridad 1](./img/4.png)
 
    - **MQTT (1883)**: 0.0.0.0/0 (para el ESP32)
    - **WebSocket (9001)**: 0.0.0.0/0 (para la página web)
 
-   ![Grupo de seguridad 2](https://drive.google.com/file/d/1YQQ4VMH-6w52Fr4fggVbDjCO5tVakzwa/view?usp=sharing)
+   ![Grupo de seguridad 2](./img/5.png)
 
-   ![Grupo de seguridad 3](https://drive.google.com/file/d/1tD4k7NFHZsZwpLkgSl1nUCG2CPb9nd7p/view?usp=sharing)
+   ![Grupo de seguridad 3](./img/6.png)
 
-4. **Configurar Key Pair**:
+#### 1.4 **Configurar Key Pair**:
 
-  ![Key-par 1](https://drive.google.com/file/d/1tD4k7NFHZsZwpLkgSl1nUCG2CPb9nd7p/view?usp=sharing)
+  ![Key-par 1](./img/7.png)
    - Crear nuevo Key Pair o usar existente
 
 
-   ![Key-par 2](https://drive.google.com/file/d/1WInfO19BwOqGEjt24B689RRF2Xo3-r6P/view?usp=sharing)
+   ![Key-par 2](./img/8.png)
 
 
 
    - Descargar archivo `.pem` para acceso SSH
 
 
-   ![Key-par 3](https://drive.google.com/file/d/1s8-bWCufL0JACIJkdMwakB6106TaICSw/view?usp=sharing)
+   ![Key-par 3](./img/10.png)
 
 
-5. **Lanzar Instancia** y anotar la **IP pública**
+#### 1.5 **Lanzar Instancia** y anotar la **IP pública**
 
-![Launch instance 1](https://drive.google.com/file/d/1QQsbhHSKzdzeS5czW2XZDGCT5SBHPyK3/view?usp=sharing)
+![Launch instance 1](./img/9.png)
 
-![Launch instance 2](https://drive.google.com/file/d/1MOEXaDMneSLZQzOcl8q3mhrGXcwUp3ap/view?usp=sharing)
+![Launch instance 2](./img/11.png)
 
 
-#### 1.2 Conectar al Servidor
-
+# Parte 2: Conectar al Servidor
+Abrir la ruta donde se guardó el archivo  `.pem` para acceso SSH y ejecutar los siguientes comandos
 ```bash
 # Cambiar permisos del archivo .pem
-chmod 400 tu-key.pem
+chmod 400 key-descargada.pem
 
 # Conectar por SSH
-ssh -i tu-key.pem ubuntu@TU_IP_PUBLICA
+ssh -i key-descargada.pem ubuntu@IP_PUBLICA_SERVER
 ```
+![ssh connect](./img/12.png)
+![ip-public](./img/13.png)
+![ip-public](./img/14.png)
+![ip-public](./img/15.png)
+![ip-public](./img/16.png)
 
-#### 1.3 Actualizar Sistema
+## **2 Actualizar Sistema**
+
+#### **2.1 instalar apache**
+
+Si aún no  se tiene Apache instalado, se puede hacer  usando el gestor de paquete apt, abriendo  una terminal y ejecutar estos comandos
+
 
 ```bash
 sudo apt update
-sudo apt upgrade -y
+sudo apt install apache2
 ```
 
-### Parte 2: Instalación y Configuración de Apache Web Server
+Una vez instalado, Apache debería iniciarse automáticamente, y su página de inicio predeterminada estará disponible en tu servidor.
 
-#### 2.1 Instalar Apache
+#### **2.2 Crear la estructura de directorios**
+
+Por convención, las páginas web se almacenan en el directorio **/var/www/hmtl**. se puede utilizar este directorio para uba página web sencilla. Puedes crear un directorio para el sitio y cambiar los permisos para que puedas editar los archivos:
 
 ```bash
-sudo apt install apache2 -y
+sudo mkdir /var/www/html/mi-sitio
+sudo chown -R tu_usuario:tu_usuario /var/www/html/mi-sitio
 ```
 
-#### 2.2 Verificar Instalación
+Reemplaza **`tu_usuario`** con tu nombre de usuario.
+
+
+![sitio](./img/17.png)
+
+
+
+#### **2.3 Comprobar el Estado del Servidor**
+
+Se debe asegúrar de que Apache esté en ejecución. Puedes verificar su estado con el siguiente comando:
 
 ```bash
+
 sudo systemctl status apache2
+
+```
+
+![Untitled](./img/18.png)
+
+Si Apache no se está ejecutando, se debe iniciar el servicio con:
+
+```bash
+
 sudo systemctl start apache2
-sudo systemctl enable apache2
+
 ```
 
-#### 2.3 Verificar Acceso Web
+#### **2.4 Accede a tu página web**
+Ahora, puedes acceder a la página web en un navegador web utilizando la dirección IP del servidor. 
 
-- Abrir navegador y ir a `http://IP_PUBLICA_SERVER`
-- Deberías ver la página por defecto de Apache
+![Untitled](./img/19.png)
 
-### Parte 3: Instalación y Configuración de Mosquitto MQTT
+![Untitled](./img/20.png)
 
-#### 3.1 Instalar Mosquitto
+**Importante:** El servidor predeterminado no admite HTTPS, así que asegúrese de iniciar sesión mediante HTTP.
+
+![Untitled](./img/21.png)
+
+### Mosquitto Server. (MQTT)
+
+Para crear un servidor MQTT en Ubuntu, se puede  utilizar el popular servidor MQTT llamado Mosquitto. Mosquitto es de código abierto y ampliamente utilizado en la comunidad de IoT y desarrollo de aplicaciones que requieren comunicación de mensajes entre dispositivos.   asi de debe de instalar y configurar Mosquitto en Ubuntu:
+
+#### Paso 1: Instalar Mosquitto
 
 ```bash
-sudo apt install mosquitto mosquitto-clients -y
+
+sudo apt update
+sudo apt install mosquitto mosquitto-clients
+
 ```
 
-#### 3.2 Configurar Mosquitto
+Abrir una terminal y ejecuta los siguientes comandos para instalar Mosquitto en el sistema:
+
+Estos comandos actualizarán la lista de paquetes disponibles y luego instalarán el servidor Mosquitto y la utilidad de línea de comandos Mosquitto Clients.
+
+#### Paso 2: Iniciar y Habilitar el Servicio
+
+Una vez que Mosquitto esté instalado, se puede habilitar el servicio y se debe de asegurar de que se inicie automáticamente al arrancar el sistema con los siguientes comandos:
 
 ```bash
-# Crear archivo de configuración
+
+sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
+
+```
+
+#### Paso 3: Comprobar el Estado del Servidor
+
+Para verificar si Mosquitto se está ejecutando correctamente ejecutando el siguiente comando:
+
+```bash
+
+sudo systemctl status mosquitto
+
+```
+
+Se deberia ver un mensaje que indique que el servicio está activo y en funcionamiento.
+
+![Untitled](./img/22.png)
+
+#### Paso 4: Configurar el Servidor (Opcional)
+
+La configuración predeterminada de Mosquitto generalmente es suficiente para un uso básico. Sin embargo, si  se desea personalizar la configuración, se puede editar el archivo de configuración principal de Mosquitto:
+
+```bash
+
 sudo nano /etc/mosquitto/conf.d/mosquitto.conf
+
 ```
 
-**Contenido del archivo:**
-```
+Realiza las modificaciones que desees y guarda el archivo.
+
+```bash
 listener 1883
 protocol mqtt
-password_file /etc/mosquitto/passwd
-allow_anonymous false
 
 listener 9001
 protocol websockets
-allow_anonymous true
+
+password_file /etc/mosquitto/passwd
+allow_anonymous false
 ```
 
-#### 3.3 Crear Usuario y Contraseña
+![Untitled](./img/23.png)
+
+#### **2.5 Crear un archivo de contraseñas:**
+
+- Abrir una terminal y ejecuta el siguiente comando para crear un archivo que almacene los usuarios y contraseñas:
 
 ```bash
-# Crear usuario 'esp32' con contraseña '12345678'
-sudo mosquitto_passwd -c /etc/mosquitto/passwd esp32
-# Cuando pregunte, ingresar: 12345678
 
-# Configurar permisos
+sudo mosquitto_passwd -c /etc/mosquitto/passwd <nombre-de-usuario>
+
+```
+
+Reemplazar **`<nombre-de-usuario>`** con el nombre de usuario que  se desee. Será solicitado a ingresar una contraseña para ese usuario.
+
+![Untitled](./img/24.png)
+
+```bash
 sudo chown mosquitto:mosquitto /etc/mosquitto/passwd
-sudo chmod 640 /etc/mosquitto/passwd
+sudo chmod 640 /etc/mosquitto/passwdclear
 ```
 
-#### 3.4 Reiniciar y Verificar Mosquitto
+#### **2.6 Reiniciar el servidor Mosquitto para que los cambios surtan efecto:**
 
 ```bash
+
 sudo systemctl restart mosquitto
-sudo systemctl enable mosquitto
-sudo systemctl status mosquitto
+
 ```
 
-#### 3.5 Probar MQTT
+Ahora, cuando te conectes al servidor MQTT Mosquitto, deberás proporcionar un nombre de usuario y contraseña válidos para autenticarte.
+
+#### **2.7 Prueba el Servidor**
+
+Puedes utilizar el cliente Mosquitto para probar la funcionalidad del servidor MQTT. Abre una terminal y utiliza el siguiente comando para suscribirte a un tema y ver los mensajes que llegan:
 
 ```bash
-# Terminal 1 - Suscribirse
-mosquitto_sub -h localhost -t esp32/led -u esp32 -P 12345678
 
-# Terminal 2 - Publicar
-mosquitto_pub -h localhost -t esp32/led -m "test" -u esp32 -P 12345678
+mosquitto_sub -h localhost -t test -u esp32 -P esp32
+musqu
+
 ```
 
-### Parte 4: Crear Página Web
-
-#### 4.1 Crear archivo HTML
+Abrir otra terminal y publica un mensaje en el mismo tema:
 
 ```bash
+
+mosquitto_pub -h localhost -t test -m "Hola, MQTT!" -u esp32 -P esp32
+
+```
+
+Deberías ver el mensaje "Hola, MQTT!" en la terminal donde te suscribiste al tema.
+
+### Test Client MQTT.
+
+![Untitled](./img/25.png)
+![Untitled](./img/26.png)
+
+
+## Parte 3: Moficacion del archivo index.html
+
+Para  la aplicacion a desarrollar  se debe colocar este  codigo HTML de la parte web para  vizualizacion  de la informacion, este se coloca en la siguiente ruta:
+
+```bash
+
 sudo nano /var/www/html/index.html
-```
 
+```
 **Contenido del archivo:**
 ```html
 <!DOCTYPE html>
@@ -284,24 +399,20 @@ sudo nano /var/www/html/index.html
 </html>
 ```
 
+![Untitled](./img/27.png)
 
+* Ir a ```http://IP_PUBLICA_SERVER/index.html ```
+* Debería mostrar la página con estado "Conectando a MQTT..."
 
-#### 4.2 Verificar Página Web
+## Parte 4: Configuración del Proyecto ESP32
 
-- Ir a `http://IP_PUBLICA_SERVER/index.html`
-- Debería mostrar la página con estado "Conectando a MQTT..."
-
----
-
-### Parte 5: Configuración del Proyecto ESP32
-
-#### 5.1 Prerequisitos
+#### 4.1 Prerequisitos
 
 - **ESP-IDF v5.5** instalado
 - **ESP32-C6-DevKitC-1 v1.2**
 - **Cable USB-C**
 
-#### 5.2 Estructura del Proyecto
+#### 4.2 Estructura del Proyecto
 
 El proyecto ya está configurado con los archivos necesarios:
 
@@ -313,7 +424,7 @@ main/
 └── station_example_main.c   # Código principal
 ```
 
-#### 5.3 Configurar Variables en el Código
+#### 4.3 Configurar Variables en el Código
 
 Editar `main/station_example_main.c` y cambiar las siguientes líneas:
 
@@ -331,7 +442,7 @@ Editar `main/station_example_main.c` y cambiar las siguientes líneas:
 - `PASSWORD_WIFI`: Contraseña de tu red WiFi  
 - `IP_PUBLICA_SERVER`: IP pública de tu servidor AWS EC2
 
-#### 5.4 Compilar y Flashear
+#### 4.4 Compilar y Flashear
 
 ```bash
 # Configurar target para ESP32-C6
@@ -350,7 +461,7 @@ idf.py flash
 idf.py monitor
 ```
 
-#### 5.5 Configuración de Red (opcional)
+#### 4.5 Configuración de Red (opcional)
 
 Si prefieres configurar WiFi mediante menuconfig:
 
